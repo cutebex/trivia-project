@@ -8,6 +8,7 @@ export const commonReducer = createSlice({
   initialState: {
     questions: [],
     answers: [],
+    isLoading: true,
     error: undefined,
   },
   reducers: {
@@ -16,6 +17,7 @@ export const commonReducer = createSlice({
         element.question = DOMPurify.sanitize(element.question);
         return element;
       });
+      state.isLoading = false;
       state.error = undefined;
     },
     setAnswer: (state: any, action: any) => {
@@ -27,6 +29,7 @@ export const commonReducer = createSlice({
     reset: (state: any) => {
       state.questions = [];
       state.answers = [];
+      state.isLoading = true;
       state.error = undefined;
     },
   },
@@ -65,6 +68,18 @@ export const selectQuestion = (state: { common: any; }) => {
   }
 
   return {};
+};
+
+export const isLoadingState = (state: { common: any; }) => {
+  const { common } = state;
+  const { error, isLoading } = common;
+
+  if (error) {
+    return { error };
+  }
+    return {
+      isLoading,
+    };
 };
 
 export const selectResults = (state: { common: any; }) => {

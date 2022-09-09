@@ -1,37 +1,45 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Home } from "../pages/home";
-import { QuizScreen } from "../pages/quiz";
-import { ResultScreen } from "../pages/results";
-import ProtectedRoute, { ProtectedRouteProps } from "../hocs/protectedRouter";
-import { useSelector } from "react-redux";
-import { selectResults } from "../redux";
+import React, { Suspense, Fragment } from 'react';
+import { Route, Routes, BrowserRouter } from 'react-router-dom';
+
+import { Loading } from '../components/loading';
 
 
-// eslint-disable-next-line react-hooks/rules-of-hooks
+interface IRoute {
+  index?: boolean;
+  path?: string;
+  guard?: any;
+  layout?: React.FC;
+  component: any;
+}
 
-export default function RootRouter() {
-  
-  const results = useSelector(selectResults);
+const RootRouter = (routes: IRoute[] = []) => (
+  <BrowserRouter>
+      <Suspense fallback={<Loading />}>
+        <Routes>
+          {routes.map((route: IRoute, i: number) => {
+            const Component = route.component;
+            const Guard = route.guard || Fragment;
+            const Layout = route.layout || Fragment;
+            return (
+              <Route
+                key={i}
+                path={route.path!}
+                index={route.index!}
+                element={
+                  <Guard>
+                    <Layout>
+                      <Component />
+                    </Layout>
+                  </Guard>
+                }
+              />
+            );
+          })}
+        </Routes>
+      </Suspense>
+    </BrowserRouter>
+);
 
+export default RootRouter;
 
-  const defaultProtectedRouteProps: Omit<ProtectedRouteProps, 'outlet'> = {
-    isResult: (results.length === 10),
-    authenticationPath: '/',
-    redirectPath: "/results",
-    setRedirectPath: function (path: string): void {
-      console.log("error");
-    }
-  };
-
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/results" element={<ProtectedRoute {...defaultProtectedRouteProps} outlet={<ResultScreen />} />}  />
-        <Route path="/quiz" element={<QuizScreen />} />
-        {/* <Route path="/results" element={<ResultScreen />} /> */}
-      </Routes>
-    </Router>
-  )
-};
 
