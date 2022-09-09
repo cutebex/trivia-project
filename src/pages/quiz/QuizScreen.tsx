@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import Quiz from "./Quiz";
-import { Loading } from "../loading";
+import { Loading } from "../../components/loading";
 import { useSelector } from "react-redux";
 import { selectQuestion, fetchQuestions, setAnswer } from "../../redux";
 import { useNavigate } from "react-router-dom";
